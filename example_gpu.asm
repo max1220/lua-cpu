@@ -11,8 +11,25 @@ SET C, :video_mmap
 
 IOCALL
 
-;loop forever
+
 :loop
+
+;access clear screen
+SET A, 0xFF15
+
+;randomize clear pattern
+RAND B
+
+;do clear
+IOCALL
+
+;access screen dump
+SET A, 0xFF16
+
+;do screen dump
+IOCALL
+
+;loop forever
 GOTO :loop
 
 

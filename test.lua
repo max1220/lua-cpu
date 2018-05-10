@@ -72,15 +72,15 @@ print(" ok")
 
 print("Running...")
 local steps = 0
-local last_draw_steps = 0
-local draw_every = 100000
+local csteps = 0
+local step_size = 100000
 repeat
-  steps = steps + pc:run(draw_every)
-  if last_draw_steps + draw_every < steps then
+  steps = steps + pc:run(step_size)
+  if csteps + step_size < steps then
     -- print("Drawing at step " .. steps)
-    -- gpu:draw_unicode()
-    gpu:draw_unicode()
-    last_draw_steps = steps
+    print("sleeping after " .. steps .. " cycles")
+    time.sleep(0.1)
+    csteps = steps
   end
 until not pc.running
 print("\nHalted")

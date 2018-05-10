@@ -295,6 +295,13 @@ local function sub_reg_value(self)
   return 4
 end
 
+local function rand_reg(self)
+  local register_i = self:get_mem_8(self.registers.PC + 1) + 1
+  local register = register_index[math.max(math.min(register_i, #register_index),1)]
+  self.registers[register] = math.random(0, 255)
+  return 2
+end
+
 local function io_call(self)
   self:io_call()
   return 1
@@ -338,6 +345,8 @@ end
 print("add_reg_value:",#instructions)
 table.insert(instructions, add_reg_value) -- 84
 table.insert(instructions, sub_reg_value)
+table.insert(instructions, rand_reg) -- 86
+
 --print("div_reg_value", table.insert(instructions, div_reg_value))
 --print("mul_reg_value", table.insert(instructions, mul_reg_value))
 --print("and_reg_value", table.insert(instructions, and_reg_value))

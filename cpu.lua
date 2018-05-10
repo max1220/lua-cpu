@@ -85,6 +85,7 @@ function new_cpu()
     end
     
     function computer:run(max_steps)
+      local max_steps = tonumber(max_steps) or math.huge
       local steps = 0
       self.running = true
       while self.running do

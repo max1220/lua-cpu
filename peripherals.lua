@@ -174,6 +174,19 @@ function peripherals.new_graphics_card(computer, pixel_callback)
       local g = computer.registers.C & 0x00FF
       local b = computer.registers.D & 0x00FF
       self.pallet[i] = {r,g,b}
+    elseif mode == 0x0005 then
+      -- clear screen
+      local v = computer.registers.B & 0x00FF
+      for i=1, self.mode.len do
+        if self.mode.mode == "direct" then
+          computer:set_mem_8(self.pc_mem_addr + i - 1, v)
+        else
+          self.memory[self.fb_addr + i - 1] = v
+        end
+      end
+    elseif mode == 0x0006 then
+      -- debug: print current screen as unicode
+      self:draw_unicode()
     end
   end
   return graphics_card
