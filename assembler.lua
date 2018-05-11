@@ -350,8 +350,14 @@ function assembler.tokens_to_bytes(tokens, offset)
         write_16(token.args[1].literal)
       elseif token.instr == "RAND" then
         assert(token.args[1].type == "register")
-        write_8(86)
+        write_8(99)
         write_8(registers[token.args[1].register] - 1)
+      elseif token.instr == "AND" then
+        assert(token.args[1].type == "register")
+        assert(token.args[2].type == "literal")
+        write_8(100)
+        write_8(registers[token.args[1].register] - 1)
+        write_16(token.args[2].literal)
       elseif token.instr == "TESTEQ" then
         instr_test_eq(token.args, write_8, write_16)
       elseif token.instr == "TESTLG" then

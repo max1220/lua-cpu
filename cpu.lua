@@ -80,7 +80,7 @@ function new_cpu()
           local pc_mod = instructions[instr + 1](self)
           self.registers.PC = self.registers.PC + pc_mod
         else
-          error("Unknown instruction: ", instr)
+          error("Unknown instruction: " ..  instr)
         end
     end
     
@@ -91,7 +91,7 @@ function new_cpu()
       while self.running do
         self:step()
         steps = steps + 1
-        if steps <= max_steps then
+        if steps >= max_steps then
           return steps
         end
       end

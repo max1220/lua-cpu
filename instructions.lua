@@ -283,6 +283,14 @@ local function add_reg_value(self)
   return 4
 end
 
+local function and_reg_value(self)
+  local register_i = self:get_mem_8(self.registers.PC + 1) + 1
+  local register = register_index[math.max(math.min(register_i, #register_index),1)]
+  local value = self.registers[register] & self:get_mem_16(self.registers.PC + 2)
+  self.registers[register] = value
+  return 4
+end
+
 local function sub_reg_value(self)
   local register_i = self:get_mem_8(self.registers.PC + 1) + 1
   local register = register_index[math.max(math.min(register_i, #register_index),1)]
@@ -298,7 +306,7 @@ end
 local function rand_reg(self)
   local register_i = self:get_mem_8(self.registers.PC + 1) + 1
   local register = register_index[math.max(math.min(register_i, #register_index),1)]
-  self.registers[register] = math.random(0, 255)
+  self.registers[register] = math.random(0x0000, 0xFFFF)
   return 2
 end
 
@@ -326,7 +334,7 @@ local instruction_gens = {
   set_reg_mem_literal,    -- 13 -> 19   SET A, [0x0000]
   set_mem_literal_reg,    -- 20 -> 26   SET [0x0000], A
   set_reg_literal,        -- 27 -> 33   SET A, 0x0000
-  set_reg_reg,            -- 34 -> 40   SET SET A, B
+  set_reg_reg,            -- 34 -> 40   SET A, B
   set_reg_mem_self_addr,  -- 41 -> 47   SET A, [A]
   add_reg_reg,            -- 48 -> 54   ADD A, B
   set_mem_reg_reg,        -- 55 -> 61   SET [A], B
@@ -336,6 +344,23 @@ local instruction_gens = {
   or_reg_reg,
   xor_reg_reg
 }
+
+local function add_instruction(name, func, index, args)
+  
+end
+
+-- argument encodings:
+-- reg:         register by pc-relative byte (+1 byte)
+-- lit:         literal by pc-relative word (+2 byte)
+-- reg_instr:   register by instruction index (+0 byte)
+-- mem_lit:     memory location by pc-relative word (+2 byte)
+-- mem_reg:     memory location by register encoded in pc-relative byte (+1 byte)
+add_instruction("set", set_reg_mem_literal, 13, {"reg_instr", "mem_lit"})
+add_instruction("set", set_mem_literal_reg, 20, {"mem_lit", "reg_instr"})
+add_instruction("set", set_reg_literal, 27, {"reg_instr", "lit"})
+add_instruction("set", set_reg_reg, 34, {"reg_instr", "reg"})
+add_instruction("set", set_reg_mem_self_addr, 41, {"reg_instr"})
+
 for _, instruction_gen in ipairs(instruction_gens) do
   for _, register in ipairs(register_index) do
     table.insert(instructions, instruction_gen(register))
@@ -343,9 +368,11 @@ for _, instruction_gen in ipairs(instruction_gens) do
 end
 
 print("add_reg_value:",#instructions)
-table.insert(instructions, add_reg_value) -- 84
+table.insert(instructions, add_reg_value) -- 98
 table.insert(instructions, sub_reg_value)
-table.insert(instructions, rand_reg) -- 86
+table.insert(instructions, rand_reg) -- 100
+table.insert(instructions, and_reg_value)
+
 
 --print("div_reg_value", table.insert(instructions, div_reg_value))
 --print("mul_reg_value", table.insert(instructions, mul_reg_value))
